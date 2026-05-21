@@ -7,9 +7,10 @@
   @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@700&display=swap');
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
-    background:#87CEEB;
-    display:flex;flex-direction:column;align-items:center;
-    justify-content:center;min-height:100vh;overflow:hidden;
+    background:#000;
+    margin:0;padding:0;overflow:hidden;
+    width:100vw;height:100vh;
+    display:flex;align-items:center;justify-content:center;
     font-family:'Comic Neue',cursive;
   }
   body::before,body::after{
@@ -67,8 +68,8 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
 <body>
-<h1>&#x1F9C5; LAUCH ATTACK! &#x1F3AF;</h1>
-<div id="hud">
+<h1 style="display:none">Lauch Attack</h1>
+<div id="hud" style="display:none">
   Punkte: <span id="score">0</span>
   &nbsp;|&nbsp;
   Leben: <span id="lives">&#x2764;&#xFE0F;&#x2764;&#xFE0F;&#x2764;&#xFE0F;</span>
@@ -410,6 +411,18 @@ function draw(){
   sky.addColorStop(0,'#4fc3f7'); sky.addColorStop(1,'#a5d6a7');
   ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
 
+  // HUD direkt auf Canvas zeichnen
+  ctx.fillStyle='rgba(0,0,0,0.4)';
+  ctx.beginPath(); ctx.roundRect(6,6,W-12,34,8); ctx.fill();
+  ctx.font='bold 15px "Comic Neue",cursive';
+  ctx.textAlign='left';  ctx.fillStyle='#fff';
+  ctx.fillText('🧅 LAUCH ATTACK', 16, 27);
+  ctx.textAlign='center'; ctx.fillStyle='#ffe44d';
+  ctx.fillText('❤️'.repeat(Math.max(lives,0)), W/2, 27);
+  ctx.textAlign='right';
+  ctx.fillText('Pts: '+score+'  Lvl: '+level, W-14, 27);
+  ctx.textAlign='left';
+
   ctx.fillStyle='#5d9e4f'; ctx.fillRect(0,H-50,W,50);
   ctx.fillStyle='#3d7a32'; ctx.fillRect(0,H-55,W,12);
 
@@ -527,21 +540,16 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registered'));
 }
 
-// ── Responsive Scaling ──────────────────────────────────
+// ── Responsive Scaling: Canvas füllt den Bildschirm ────
 function scaleGame(){
-  const container = document.getElementById('gameContainer');
-  const hudH = document.getElementById('hud').offsetHeight + 
-               document.querySelector('h1').offsetHeight + 20;
-  const availW = window.innerWidth;
-  const availH = window.innerHeight - hudH;
-  const scaleX = availW / 640;
-  const scaleY = availH / 480;
-  const scale  = Math.min(scaleX, scaleY, 1); // nie größer als 1x
-  container.style.transform = 'scale(' + scale + ')';
-  container.style.marginBottom = ((480 * scale) - 480) + 'px';
+  const scaleX = window.innerWidth  / 640;
+  const scaleY = window.innerHeight / 480;
+  const scale  = Math.min(scaleX, scaleY);
+  canvas.style.width  = (640 * scale) + 'px';
+  canvas.style.height = (480 * scale) + 'px';
 }
 window.addEventListener('resize', scaleGame);
-window.addEventListener('orientationchange', ()=>setTimeout(scaleGame, 200));
+window.addEventListener('orientationchange', ()=>setTimeout(scaleGame, 300));
 scaleGame();
 
 </script>
