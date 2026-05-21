@@ -21,22 +21,33 @@
   body::after{top:80px;animation-duration:50s;animation-delay:-20s;opacity:.5;}
   @keyframes clouds{from{transform:translateX(0)}to{transform:translateX(-50%)}}
   h1{
-    font-family:'Bangers',cursive;font-size:3rem;letter-spacing:.15em;
+    font-family:'Bangers',cursive;font-size:clamp(1.4rem,5vw,3rem);letter-spacing:.15em;
     color:#fff;text-shadow:3px 3px 0 #c0392b,5px 5px 0 #7f0000;
-    margin-bottom:8px;z-index:10;
+    margin-bottom:4px;z-index:10;
   }
   #hud{
-    display:flex;gap:30px;margin-bottom:10px;z-index:10;
-    background:rgba(0,0,0,.35);border-radius:20px;padding:6px 20px;
-    font-size:1.1rem;color:#fff;font-weight:700;
+    display:flex;gap:clamp(8px,3vw,30px);margin-bottom:6px;z-index:10;
+    background:rgba(0,0,0,.35);border-radius:20px;
+    padding:4px clamp(8px,2vw,20px);
+    font-size:clamp(0.7rem,2.5vw,1.1rem);color:#fff;font-weight:700;
   }
   #hud span{color:#ffe44d;}
-  canvas{border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.4);display:block;z-index:5;position:relative;}
+  canvas{
+    border-radius:8px;
+    box-shadow:0 8px 40px rgba(0,0,0,.4);
+    display:block;z-index:5;position:relative;
+    max-width:100vw;
+    max-height:calc(100vh - 90px);
+    width:auto;
+    height:auto;
+  }
   #overlay{
     position:absolute;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:14px;
+    align-items:center;justify-content:center;gap:8px;
     background:rgba(0,0,0,.82);border-radius:12px;
-    width:640px;height:480px;z-index:20;transition:opacity .3s;
+    width:min(640px, 100vw);
+    height:min(480px, calc(100vh - 90px));
+    z-index:20;transition:opacity .3s;
   }
   #overlay.hidden{opacity:0;pointer-events:none;}
   #overlay h2{font-family:'Bangers',cursive;font-size:2.8rem;color:#ff4444;letter-spacing:.2em;}
@@ -171,10 +182,37 @@ document.addEventListener('keyup', e=>{ keys[e.key]=false; });
 
 canvas.addEventListener('mousemove', e=>{
   const r=canvas.getBoundingClientRect();
-  cannon.angle=Math.atan2(e.clientY-r.top-cannon.y, e.clientX-r.left-cannon.x);
+  const scaleX = 640 / r.width;
+  const scaleY = 480 / r.height;
+  const mx=(e.clientX-r.left)*scaleX;
+  const my=(e.clientY-r.top)*scaleY;
+  cannon.angle=Math.atan2(my-cannon.y, mx-cannon.x);
   cannon.angle=Math.max(-Math.PI+0.05, Math.min(-0.05, cannon.angle));
 });
 canvas.addEventListener('click', ()=>fireBall());
+canvas.addEventListener('touchstart', e=>{
+  e.preventDefault();
+  const t=e.touches[0];
+  const r=canvas.getBoundingClientRect();
+  const scaleX = 640 / r.width;
+  const scaleY = 480 / r.height;
+  const mx=(t.clientX-r.left)*scaleX;
+  const my=(t.clientY-r.top)*scaleY;
+  cannon.angle=Math.atan2(my-cannon.y, mx-cannon.x);
+  cannon.angle=Math.max(-Math.PI+0.05,Math.min(-0.05,cannon.angle));
+  fireBall();
+},{passive:false});
+canvas.addEventListener('touchmove', e=>{
+  e.preventDefault();
+  const t=e.touches[0];
+  const r=canvas.getBoundingClientRect();
+  const scaleX = 640 / r.width;
+  const scaleY = 480 / r.height;
+  const mx=(t.clientX-r.left)*scaleX;
+  const my=(t.clientY-r.top)*scaleY;
+  cannon.angle=Math.atan2(my-cannon.y, mx-cannon.x);
+  cannon.angle=Math.max(-Math.PI+0.05,Math.min(-0.05,cannon.angle));
+},{passive:false});
 
 function fireBall(){
   if(!running||cannon.cooldown>0) return;
