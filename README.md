@@ -3,7 +3,7 @@
 Ein lustiges Browser-Spiel als PWA.
 
 ## Spielen
-👉 [Hier spielen](https://DEIN-USERNAME.github.io/lauch-attack/)
+👉 [Hier spielen]https://github.com/ChristianOssinger/Lauch-Shooter
 
 ## Installieren (PWA)
 - **Android/Chrome**: Menü → "Zum Startbildschirm hinzufügen"
