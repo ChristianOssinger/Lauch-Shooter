@@ -1,4 +1,4 @@
-const CACHE = 'lauch-attack-v1';
+const CACHE = 'lauch-attack-v3';
 const FILES = [
   './',
   './index.html',
