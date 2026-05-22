@@ -26,6 +26,18 @@
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="startOverlay" style="
+  display:flex;position:fixed;inset:0;z-index:50;
+  align-items:center;justify-content:center;">
+  <button id="startBtn" onclick="startGame()" style="
+    padding:20px 50px;font-size:1.5rem;font-weight:bold;
+    background:#c0392b;color:#fff;border:none;border-radius:40px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.5);cursor:pointer;
+    font-family:sans-serif;letter-spacing:0.1em;
+    -webkit-tap-highlight-color:transparent;">
+    &#x1F3AF; LOS GEHTS!
+  </button>
+</div>
 <div id="warn">
   <h2>&#x26A1; ACHTUNG! &#x26A1;</h2>
   <p>Du hast <strong style="color:#ffe44d">Level 4</strong> geschafft!<br>
@@ -77,6 +89,16 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
 
 let cannon,monster,balls,particles,score,lives,level,running,frameCount,keys,tpWarn;
 
+function startGame(){
+  document.getElementById('startOverlay').style.display='none';
+  resetGame();
+  running=true;
+  requestAnimationFrame(gameLoop);
+}
+function showGameOver(){
+  document.getElementById('startOverlay').style.display='flex';
+  document.getElementById('startBtn').textContent='🔄 Nochmal!';
+}
 function resetGame(){
   cannon={x:70,y:GH-80,angle:-Math.PI/4,cooldown:0};
   monster={x:GW-160,y:GH/2-90,vx:0,vy:0,w:100,h:165,
@@ -95,9 +117,9 @@ function getPos(cx,cy){
 document.addEventListener('keydown',e=>{keys[e.key]=true;if(e.key===' '){e.preventDefault();fireBall();}});
 document.addEventListener('keyup',e=>{keys[e.key]=false;});
 canvas.addEventListener('mousemove',e=>{if(!running)return;const p=getPos(e.clientX,e.clientY);setAngle(p.x,p.y);});
-canvas.addEventListener('click',()=>{running?fireBall():startGame();});
+canvas.addEventListener('click',()=>{if(running)fireBall();});
 canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!running)return;const p=getPos(e.touches[0].clientX,e.touches[0].clientY);setAngle(p.x,p.y);},{passive:false});
-canvas.addEventListener('touchend',e=>{e.preventDefault();running?fireBall():startGame();},{passive:false});
+canvas.addEventListener('touchend',e=>{e.preventDefault();if(running)fireBall();},{passive:false});
 
 function setAngle(x,y){
   cannon.angle=Math.atan2(y-cannon.y,x-cannon.x);
@@ -311,8 +333,10 @@ function showStart(){
 }
 
 function gameOver(){
-  running=false;draw();
-  drawOverlay('GAME OVER',['Der Lauch hat gewonnen...','Score: '+score],'Nochmal!');
+  running=false;
+  draw();
+  drawOverlay('GAME OVER',['Der Lauch hat gewonnen...','Score: '+score],'');
+  showGameOver();
 }
 
 resetGame();
