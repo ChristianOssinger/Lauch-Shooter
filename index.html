@@ -118,6 +118,12 @@ document.addEventListener('keydown',e=>{keys[e.key]=true;if(e.key===' '){e.preve
 document.addEventListener('keyup',e=>{keys[e.key]=false;});
 canvas.addEventListener('mousemove',e=>{if(!running)return;const p=getPos(e.clientX,e.clientY);setAngle(p.x,p.y);});
 canvas.addEventListener('click',()=>{if(running)fireBall();});
+canvas.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  if(!running)return;
+  const p=getPos(e.touches[0].clientX,e.touches[0].clientY);
+  setAngle(p.x,p.y);
+},{passive:false});
 canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!running)return;const p=getPos(e.touches[0].clientX,e.touches[0].clientY);setAngle(p.x,p.y);},{passive:false});
 canvas.addEventListener('touchend',e=>{e.preventDefault();if(running)fireBall();},{passive:false});
 
